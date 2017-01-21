@@ -1,0 +1,8 @@
+.DS_Store
+build/
+DerivedData/
+
+*.pbxuser
+!default.pbxuser
+xcuserdata/
+
