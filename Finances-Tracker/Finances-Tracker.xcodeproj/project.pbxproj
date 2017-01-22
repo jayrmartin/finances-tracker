@@ -12,6 +12,7 @@
 		207657E61E33F8CC008B6187 /* Finances_Tracker.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 207657E41E33F8CC008B6187 /* Finances_Tracker.xcdatamodeld */; };
 		207657E81E33F8CC008B6187 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 207657E71E33F8CC008B6187 /* Assets.xcassets */; };
 		207657EB1E33F8CC008B6187 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 207657E91E33F8CC008B6187 /* Main.storyboard */; };
+		208EF9551E351624008FB4E4 /* TransactionDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 208EF9541E351624008FB4E4 /* TransactionDetailsViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,6 +23,7 @@
 		207657E71E33F8CC008B6187 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		207657EA1E33F8CC008B6187 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		207657EC1E33F8CC008B6187 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		208EF9541E351624008FB4E4 /* TransactionDetailsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransactionDetailsViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,6 +62,7 @@
 				207657E91E33F8CC008B6187 /* Main.storyboard */,
 				207657EC1E33F8CC008B6187 /* Info.plist */,
 				207657E41E33F8CC008B6187 /* Finances_Tracker.xcdatamodeld */,
+				208EF9541E351624008FB4E4 /* TransactionDetailsViewController.swift */,
 			);
 			path = "Finances-Tracker";
 			sourceTree = "<group>";
@@ -135,6 +138,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				208EF9551E351624008FB4E4 /* TransactionDetailsViewController.swift in Sources */,
 				207657E61E33F8CC008B6187 /* Finances_Tracker.xcdatamodeld in Sources */,
 				207657E31E33F8CC008B6187 /* ViewController.swift in Sources */,
 				207657E11E33F8CC008B6187 /* AppDelegate.swift in Sources */,
@@ -290,6 +294,7 @@
 				207657F11E33F8CC008B6187 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 

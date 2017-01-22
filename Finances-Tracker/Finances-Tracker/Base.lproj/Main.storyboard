@@ -407,7 +407,7 @@
         <!--View Controller-->
         <scene sceneID="hIz-AP-VOD">
             <objects>
-                <viewController id="XfG-lQ-9wD" customClass="ViewController" customModule="Finances_Tracker" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="XfG-lQ-9wD" customClass="ViewController" customModule="Finances_Tracker" sceneMemberID="viewController">
                     <view key="view" wantsLayer="YES" id="m2S-Jp-Qdl">
                         <rect key="frame" x="0.0" y="0.0" width="960" height="720"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -740,7 +740,7 @@
                         <outlet property="addButton" destination="ncY-U1-2dZ" id="Q7X-XU-z34"/>
                         <outlet property="loadButton" destination="P3r-Pe-5Yw" id="kTn-5x-fFX"/>
                         <outlet property="newButton" destination="s0O-K0-FKi" id="RcQ-t6-4Pa"/>
-                        <outlet property="tableView" destination="1Kb-zk-3Bm" id="WvE-VL-uYk"/>
+                        <outlet property="transactionsTableView" destination="1Kb-zk-3Bm" id="giH-za-c8i"/>
                     </connections>
                 </viewController>
                 <customObject id="rPt-NT-nkU" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
@@ -750,7 +750,7 @@
         <!--Transaction Details View Controller-->
         <scene sceneID="Den-3W-Yov">
             <objects>
-                <viewController storyboardIdentifier="TransactionDetailsViewController" id="Sxw-9z-Td9" customClass="TransactionDetailsViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="TransactionDetailsViewController" id="Sxw-9z-Td9" customClass="TransactionDetailsViewController" customModule="Finances_Tracker" sceneMemberID="viewController">
                     <view key="view" id="cfw-Tu-nIx">
                         <rect key="frame" x="0.0" y="0.0" width="400" height="200"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -854,7 +854,7 @@ Gw
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                                 <connections>
-                                    <action selector="handleAddButtonPress:" target="Sxw-9z-Td9" id="MS2-J2-Iep"/>
+                                    <action selector="handleAddOrEditButtonPress:" target="Sxw-9z-Td9" id="Qgw-Rm-KlL"/>
                                 </connections>
                             </button>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YXC-8C-lTn">
@@ -869,7 +869,7 @@ Gw
                         </subviews>
                     </view>
                     <connections>
-                        <outlet property="addButton" destination="LeW-wu-AJu" id="7Fa-YD-WBf"/>
+                        <outlet property="addEditButton" destination="LeW-wu-AJu" id="4Ov-Zu-2fS"/>
                         <outlet property="amountTextField" destination="EJG-MD-EdD" id="GWF-n9-5R5"/>
                         <outlet property="categoryPopUpButton" destination="L07-VW-yoo" id="xdQ-WT-lzy"/>
                         <outlet property="datePicker" destination="SxP-bb-UQh" id="e5o-vW-zzR"/>
@@ -878,7 +878,7 @@ Gw
                 </viewController>
                 <customObject id="6wO-eQ-DkQ" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="582" y="744"/>
+            <point key="canvasLocation" x="827" y="775"/>
         </scene>
     </scenes>
     <resources>
