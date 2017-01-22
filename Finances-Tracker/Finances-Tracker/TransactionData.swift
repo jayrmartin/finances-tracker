@@ -23,7 +23,8 @@ class TransactionData: NSObject
         case date,
         category,
         amount,
-        vendor
+        vendor,
+        owner
     }
     
     var date: Date = Date()

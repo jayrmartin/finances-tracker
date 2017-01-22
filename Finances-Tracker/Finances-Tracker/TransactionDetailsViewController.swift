@@ -20,7 +20,7 @@ class TransactionDetailsViewController: NSViewController
     ]
     
     // The currently selected category for the new transaction
-    var currSelectedCategory: String = ""
+    var category: String = ""
     
     // The date entered for the new transaction
     var date: Date = Date()
@@ -31,7 +31,14 @@ class TransactionDetailsViewController: NSViewController
     // The amount entered for the new transaction
     var amount: Double = 0
     
+    // Whether the view controller is being used to edit an existing transaction
     var editingExistingTransaction: Bool = false
+    
+    // Callback function for adding a transaction
+    var addTransactionCallbackFunction: ((TransactionData, Bool) -> Void)?
+    
+    // Callback function for editing a transaction
+    var editTransactionCallbackFunction: ((TransactionData, Bool) -> Void)?
 
     @IBOutlet weak var categoryPopUpButton: NSPopUpButton!
     @IBOutlet weak var datePicker: NSDatePicker!
@@ -42,8 +49,8 @@ class TransactionDetailsViewController: NSViewController
     @IBAction func handleCategoryPopUpButtonChoice(_ sender: Any)
     {
         let btn = sender as! NSPopUpButton
-        currSelectedCategory = btn.titleOfSelectedItem!
-        print("Selected Item: \(currSelectedCategory)")
+        category = btn.titleOfSelectedItem!
+        print("Selected Item: \(category)")
     }
     
     @IBAction func handleAddOrEditButtonPress(_ sender: Any)
@@ -69,17 +76,31 @@ class TransactionDetailsViewController: NSViewController
         
         if editingExistingTransaction
         {
-            // TODO: Edit the specific transaction in the database
-            print("Edit Transaction! Vendor: \(vendor) Amount: \(amount) Category: \(currSelectedCategory)")
+            print("Edit Transaction! Vendor: \(vendor) Amount: \(amount) Category: \(category)")
+            
+            // Use callback to update data
+            if let editCallbackFunction = editTransactionCallbackFunction
+            {
+                let editedTransaction: TransactionData = TransactionData(transactionDate: date, transactionCategory: category, transactionAmount: amount, transactionVendor: vendor)
+                editCallbackFunction(editedTransaction, true)
+            }
         }
         else
         {
-            // TODO: Add transaction to data
-            print("New Transaction! Vendor: \(vendor) Amount: \(amount) Category: \(currSelectedCategory)")
+            print("New Transaction! Vendor: \(vendor) Amount: \(amount) Category: \(category)")
+            
+            // Add transaction to data
+            if let addCallbackFunction = addTransactionCallbackFunction
+            {
+                let newTransaction: TransactionData = TransactionData(transactionDate: date, transactionCategory: category, transactionAmount: amount, transactionVendor: vendor)
+                addCallbackFunction(newTransaction, true)
+            }
         }
         
         // Close the view
         editingExistingTransaction = false
+        addTransactionCallbackFunction = nil
+        editTransactionCallbackFunction = nil
         self.dismissViewController(self)
     }
     
@@ -107,7 +128,7 @@ class TransactionDetailsViewController: NSViewController
         if editingExistingTransaction
         {
             // Use values that were set
-            categoryPopUpButton.selectItem(withTitle: currSelectedCategory)
+            categoryPopUpButton.selectItem(withTitle: category)
             
             // Set date to current date
             datePicker.dateValue = date
@@ -122,7 +143,7 @@ class TransactionDetailsViewController: NSViewController
         else
         {
             // Reset to default values for next open
-            setDefaultValues()
+            setDefaultDetailValues()
             
             // Change button text
             addEditButton.title = "Add"
@@ -130,11 +151,11 @@ class TransactionDetailsViewController: NSViewController
     }
     
     // Helper function to set default values
-    func setDefaultValues()
+    func setDefaultDetailValues()
     {
         // Set current category to first item in the list
-        currSelectedCategory = self.categoryStrings[0]
-        categoryPopUpButton.selectItem(withTitle: currSelectedCategory)
+        category = self.categoryStrings[0]
+        categoryPopUpButton.selectItem(withTitle: category)
         
         // Set date to current date
         datePicker.dateValue = Date()
@@ -142,5 +163,14 @@ class TransactionDetailsViewController: NSViewController
         // Set values to default
         vendorTextField.stringValue = ""
         amountTextField.stringValue = ""
+    }
+    
+    // Helper function to set specific values for transaction
+    func setSpecificDetailValues(transaction: TransactionData)
+    {
+        category = transaction.category
+        date = transaction.date
+        vendor = transaction.vendor
+        amount = transaction.amount
     }
 }

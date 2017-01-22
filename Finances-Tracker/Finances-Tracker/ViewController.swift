@@ -19,10 +19,23 @@ class ViewController: NSViewController
     // List of existing transactions
     fileprivate var transactions: [NSManagedObject] = []
     
+    // Current "owner" of the displayed transactions
+    // TODO: This should be allowed to be changed -- for now just keep as "Sample"
+    fileprivate var transactionsOwner: String = "Sample"
+    
     // Separate view controller to add or edit transaction details
     fileprivate lazy var transactionDetailsViewController: TransactionDetailsViewController = {
         return self.storyboard!.instantiateController(withIdentifier: "TransactionDetailsViewController") as! TransactionDetailsViewController
     }()
+    
+    // Managed context for Core Data
+    fileprivate var cdManagedContext: NSManagedObjectContext?
+    
+    // Transaction entity description
+    fileprivate var transactionEntityDescription: NSEntityDescription?
+    
+    // The row that is currently selected for editing
+    fileprivate var transactionsTableSelectedRowForEdit: Int = -1
     
     @IBAction func handleNewButtonPress(_ sender: Any)
     {
@@ -32,11 +45,19 @@ class ViewController: NSViewController
     @IBAction func handleLoadButtonPress(_ sender: Any)
     {
         print("Load Button Pressed")
+        
+        // TODO: Set the owner of the transactions
+        
+        // Load up transactions
+        loadTransactions(updateView: true)
     }
     
     @IBAction func handleAddButtonPress(_ sender: Any)
     {
         print("Add Button Pressed")
+        
+        // Set callback function for adding transactions
+        transactionDetailsViewController.addTransactionCallbackFunction = addNewTransaction
         
         // Show the transaction details view controller
         //self.presentViewControllerAsSheet(transactionDetailsViewController)
@@ -48,6 +69,18 @@ class ViewController: NSViewController
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+        
+        // Try to grab the managed context for core data
+        if let appDelegate = NSApplication.shared().delegate as? AppDelegate
+        {
+            cdManagedContext = appDelegate.managedObjectContext
+        }
+        
+        if let managedContext = cdManagedContext
+        {
+            // Create entity description for entities
+            transactionEntityDescription = NSEntityDescription.entity(forEntityName: "Transaction", in: managedContext)!
+        }
         
         setupTransactionsTableView()
     }
@@ -68,7 +101,7 @@ class ViewController: NSViewController
         
         // For handling double clicks in the table view
         transactionsTableView.target = self
-        transactionsTableView.doubleAction = #selector(tableViewDoubleClick(_:))
+        transactionsTableView.doubleAction = #selector(transactionsTableViewDoubleClick(_:))
         
         // Create sort descriptors for the columns in the table view
         let descriptorDate = NSSortDescriptor(key: TransactionData.TransactionAttributes.date.rawValue, ascending: false)
@@ -81,22 +114,31 @@ class ViewController: NSViewController
         transactionsTableView.tableColumns[3].sortDescriptorPrototype = descriptorVendor
     }
     
-    func tableViewDoubleClick(_ sender:AnyObject)
+    func transactionsTableViewDoubleClick(_ sender:AnyObject)
     {
         // Check for selected row -- a double-click on empty area in the table view will set selectedRow to -1
         guard transactionsTableView.selectedRow >= 0 || transactionsTableView.selectedRow >= transactions.count else {
             return
         }
         
-        // Grab transaction from selected row
-        let transaction = transactions[transactionsTableView.selectedRow]
+        // Save the selected row so it can be updated later
+        transactionsTableSelectedRowForEdit = transactionsTableView.selectedRow
         
-        // TODO: Set view controller with selected transaction details
+        // Grab transaction from selected row for editing
+        let transaction = transactions[transactionsTableSelectedRowForEdit]
+        
+        // Set view controller with selected transaction details
+        let dateToEdit: Date = (transaction.value(forKey: TransactionData.TransactionAttributes.date.rawValue) as? Date)!
+        let categoryToEdit: String = (transaction.value(forKey: TransactionData.TransactionAttributes.category.rawValue) as? String)!
+        let amountToEdit: Double = (transaction.value(forKey: TransactionData.TransactionAttributes.amount.rawValue) as? Double)!
+        let vendorToEdit: String = (transaction.value(forKey: TransactionData.TransactionAttributes.vendor.rawValue) as? String)!
+        transactionDetailsViewController.setSpecificDetailValues(transaction: TransactionData(transactionDate: dateToEdit, transactionCategory: categoryToEdit, transactionAmount: amountToEdit, transactionVendor: vendorToEdit))
+        
+        // Set view controller so it knows the difference between adding and editing
         transactionDetailsViewController.editingExistingTransaction = true
         
-        // TODO: Need to set up view controller so it knows the difference between adding and editing
-        
-        // TODO: Need to set callback function to edit a specific transaction
+        // Set callback function to edit a specific transaction
+        transactionDetailsViewController.editTransactionCallbackFunction = editTransaction
         
         // Show view controller for editing
         self.presentViewControllerAsModalWindow(transactionDetailsViewController)
@@ -157,6 +199,153 @@ class ViewController: NSViewController
         let vendor1: String = (transaction1.value(forKey: TransactionData.TransactionAttributes.vendor.rawValue) as? String)!
         let vendor2: String = (transaction2.value(forKey: TransactionData.TransactionAttributes.vendor.rawValue) as? String)!
         return (vendor1.compare(vendor2) == ComparisonResult.orderedDescending)
+    }
+    
+    func addNewTransaction(transaction: TransactionData, updateView: Bool = true)
+    {
+        // Sanity check the managed context and entity
+        guard let managedContext = cdManagedContext else
+        {
+            return
+        }
+        
+        guard let transactionEntityDesc = transactionEntityDescription else
+        {
+            return
+        }
+        
+        let transactionToAdd = NSManagedObject(entity: transactionEntityDesc, insertInto: managedContext)
+        
+        // Copy over transaction values
+        transactionToAdd.setValue(transaction.date, forKey: TransactionData.TransactionAttributes.date.rawValue)
+        transactionToAdd.setValue(transaction.category, forKey: TransactionData.TransactionAttributes.category.rawValue)
+        transactionToAdd.setValue(transaction.amount, forKey: TransactionData.TransactionAttributes.amount.rawValue)
+        transactionToAdd.setValue(transaction.vendor, forKey: TransactionData.TransactionAttributes.vendor.rawValue)
+        
+        // Set the current owner
+        transactionToAdd.setValue(transactionsOwner, forKey: TransactionData.TransactionAttributes.owner.rawValue)
+        
+        // "Commit" changes to the managed object context by calling save
+        do
+        {
+            try managedContext.save()
+            
+            // Insert into array
+            transactions.append(transactionToAdd)
+            
+            // Update transactions table view if needed
+            if updateView
+            {
+                transactionsTableView.reloadData()
+            }
+        }
+        catch let error as NSError
+        {
+            // TODO: Show error to user
+            print("Could not save. \(error), \(error.userInfo)")
+        }
+    }
+    
+    func loadTransactions(updateView: Bool)
+    {
+        // Sanity check the managed context
+        guard let managedContext = cdManagedContext else
+        {
+            return
+        }
+        
+        // Create a fetch request for the transactions
+        let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: "Transaction")
+        
+        // Pass the fetch request to the managed object context to do the work
+        do
+        {
+            transactions = try managedContext.fetch(fetchRequest)
+            
+            // Update transactions table view if needed
+            if updateView
+            {
+                transactionsTableView.reloadData()
+            }
+        }
+        catch let error as NSError
+        {
+            // TODO: Show error to user
+            print("Could not fetch. \(error), \(error.userInfo)")
+        }
+    }
+    
+    func editTransaction(transaction: TransactionData, updateView: Bool = true)
+    {
+        // Sanity check the selected row
+        if transactionsTableSelectedRowForEdit < 0
+        {
+            return
+        }
+        
+        // Sanity check the managed context
+        guard let managedContext = cdManagedContext else
+        {
+            // Reset selected row
+            transactionsTableSelectedRowForEdit = -1
+            
+            return
+        }
+        
+        // Grab transaction from selected row for editing
+        let transactionInTable = transactions[transactionsTableSelectedRowForEdit]
+        
+        // Set view controller with selected transaction details
+        let dateInTable: Date = (transactionInTable.value(forKey: TransactionData.TransactionAttributes.date.rawValue) as? Date)!
+        let categoryInTable: String = (transactionInTable.value(forKey: TransactionData.TransactionAttributes.category.rawValue) as? String)!
+        let amountInTable: Double = (transactionInTable.value(forKey: TransactionData.TransactionAttributes.amount.rawValue) as? Double)!
+        let vendorInTable: String = (transactionInTable.value(forKey: TransactionData.TransactionAttributes.vendor.rawValue) as? String)!
+        
+        var updatedValues: Bool = false
+        
+        if transaction.date != dateInTable
+        {
+            transactionInTable.setValue(transaction.date, forKey: TransactionData.TransactionAttributes.date.rawValue)
+            updatedValues = true
+        }
+        if transaction.category != categoryInTable
+        {
+            transactionInTable.setValue(transaction.category, forKey: TransactionData.TransactionAttributes.category.rawValue)
+            updatedValues = true
+        }
+        if transaction.amount != amountInTable
+        {
+            transactionInTable.setValue(transaction.amount, forKey: TransactionData.TransactionAttributes.amount.rawValue)
+            updatedValues = true
+        }
+        if transaction.vendor != vendorInTable
+        {
+            transactionInTable.setValue(transaction.vendor, forKey: TransactionData.TransactionAttributes.vendor.rawValue)
+            updatedValues = true
+        }
+        
+        if updatedValues
+        {
+            // "Commit" changes to the managed object context by calling save
+            do
+            {
+                try managedContext.save()
+                
+                // Update table view if needed
+                if updateView
+                {
+                    transactionsTableView.reloadData()
+                }
+            }
+            catch let error as NSError
+            {
+                // TODO: Show error to user
+                print("Could not save. \(error), \(error.userInfo)")
+            }
+        }
+        
+        // Reset selected row
+        transactionsTableSelectedRowForEdit = -1
     }
 }
 
