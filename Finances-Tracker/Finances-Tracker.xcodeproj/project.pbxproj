@@ -14,6 +14,7 @@
 		207657EB1E33F8CC008B6187 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 207657E91E33F8CC008B6187 /* Main.storyboard */; };
 		208EF9551E351624008FB4E4 /* TransactionDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 208EF9541E351624008FB4E4 /* TransactionDetailsViewController.swift */; };
 		208EF9571E3527D7008FB4E4 /* TransactionData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 208EF9561E3527D7008FB4E4 /* TransactionData.swift */; };
+		20CF43461E45069C009A7554 /* OwnerDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20CF43451E45069C009A7554 /* OwnerDetailsViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +27,7 @@
 		207657EC1E33F8CC008B6187 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		208EF9541E351624008FB4E4 /* TransactionDetailsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransactionDetailsViewController.swift; sourceTree = "<group>"; };
 		208EF9561E3527D7008FB4E4 /* TransactionData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransactionData.swift; sourceTree = "<group>"; };
+		20CF43451E45069C009A7554 /* OwnerDetailsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OwnerDetailsViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -66,6 +68,7 @@
 				207657E41E33F8CC008B6187 /* Finances_Tracker.xcdatamodeld */,
 				208EF9541E351624008FB4E4 /* TransactionDetailsViewController.swift */,
 				208EF9561E3527D7008FB4E4 /* TransactionData.swift */,
+				20CF43451E45069C009A7554 /* OwnerDetailsViewController.swift */,
 			);
 			path = "Finances-Tracker";
 			sourceTree = "<group>";
@@ -141,6 +144,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				20CF43461E45069C009A7554 /* OwnerDetailsViewController.swift in Sources */,
 				208EF9551E351624008FB4E4 /* TransactionDetailsViewController.swift in Sources */,
 				208EF9571E3527D7008FB4E4 /* TransactionData.swift in Sources */,
 				207657E61E33F8CC008B6187 /* Finances_Tracker.xcdatamodeld in Sources */,

@@ -18,6 +18,14 @@ class ViewController: NSViewController
         static let CustomCategories = "customCategories"
     }
     
+    // Add owner success or error values
+    enum AddOwnerResult
+    {
+        static let Success = 0
+        static let GeneralError = -1
+        static let NameAlreadyExistsError = -2
+    }
+    
     // References to specific UI objects
     @IBOutlet weak var newButton: NSButton!
     @IBOutlet weak var loadButton: NSButton!
@@ -29,7 +37,14 @@ class ViewController: NSViewController
     fileprivate var transactions: [NSManagedObject] = []
     
     // Current "owner" of the displayed transactions
-    fileprivate var transactionsOwner: String = "Sample"
+    fileprivate var transactionsOwner: String = ""
+    {
+        didSet
+        {
+            // Update state of some buttons
+            addButton.isEnabled = (transactionsOwner != "")
+        }
+    }
     
     // List of "owners"
     fileprivate var ownersStrings: [String] = []
@@ -37,6 +52,11 @@ class ViewController: NSViewController
     // Separate view controller to add or edit transaction details
     fileprivate lazy var transactionDetailsViewController: TransactionDetailsViewController = {
         return self.storyboard!.instantiateController(withIdentifier: "TransactionDetailsViewController") as! TransactionDetailsViewController
+    }()
+    
+    // Separate view controller to add new owners
+    fileprivate lazy var ownerDetailsViewController: OwnerDetailsViewController = {
+        return self.storyboard!.instantiateController(withIdentifier: "OwnerDetailsViewController") as! OwnerDetailsViewController
     }()
     
     // Managed context for Core Data
@@ -51,6 +71,12 @@ class ViewController: NSViewController
     @IBAction func handleNewButtonPress(_ sender: Any)
     {
         print("New Button Pressed!")
+        
+        // Set callback function for adding owners
+        ownerDetailsViewController.addOwnerCallbackFunction = addOwner
+        
+        // Show the view
+        self.presentViewControllerAsModalWindow(ownerDetailsViewController)
     }
     
     @IBAction func handleLoadButtonPress(_ sender: Any)
@@ -95,6 +121,10 @@ class ViewController: NSViewController
         {
             transactionsOwner = loadedLastOwner
         }
+        else
+        {
+            transactionsOwner = ""
+        }
         
         // Load all owners
         if let loadedOwners = UserDefaults.standard.stringArray(forKey: SaveLoadKeys.Owners)
@@ -104,6 +134,12 @@ class ViewController: NSViewController
         
         setupTransactionsTableView()
         setupOwnersTableView()
+        
+        // Load transactions of last owner
+        if transactionsOwner != ""
+        {
+            loadTransactions(updateView: true)
+        }
     }
 
     override var representedObject: Any?
@@ -278,6 +314,9 @@ class ViewController: NSViewController
         // Create a fetch request for the transactions
         let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: "Transaction")
         
+        // Add predicate to load transactions of owner
+        fetchRequest.predicate = NSPredicate(format: "%K == %@", TransactionData.TransactionAttributes.owner.rawValue, transactionsOwner)
+        
         // Pass the fetch request to the managed object context to do the work
         do
         {
@@ -389,8 +428,6 @@ class ViewController: NSViewController
     // Helper function to change the current owner to selected one in the table and load those transactions
     fileprivate func setOwnerAndLoadTransactions()
     {
-        print( "setNewOwner: \(ownersTableView.selectedRow)" )
-        
         // Check for selected row -- a double-click on empty area in the table view will set selectedRow to -1
         guard ownersTableView.selectedRow >= 0 && ownersTableView.selectedRow < ownersStrings.count else {
             return
@@ -409,6 +446,31 @@ class ViewController: NSViewController
             // Now load the transactions for the new owner
             loadTransactions(updateView: true)
         }
+    }
+    
+    // Return value of 0 means successful add.
+    // Return value < 0 means some sort of error.
+    func addOwner(name: String) -> Int
+    {
+        if name == ""
+        {
+            return AddOwnerResult.GeneralError
+        }
+        
+        // Check if owner name already exists
+        if ownersStrings.contains(name)
+        {
+            return AddOwnerResult.NameAlreadyExistsError
+        }
+        
+        // Add to the list and save
+        ownersStrings.append(name)
+        UserDefaults.standard.set(ownersStrings, forKey: SaveLoadKeys.Owners)
+        
+        // Update the table
+        ownersTableView.reloadData()
+        
+        return AddOwnerResult.Success
     }
 }
 
