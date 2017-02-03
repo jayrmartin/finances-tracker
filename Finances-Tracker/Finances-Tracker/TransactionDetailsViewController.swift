@@ -19,6 +19,9 @@ class TransactionDetailsViewController: NSViewController
         "Alcohol"
     ]
     
+    // Array of custom categories
+    fileprivate var customCategoryStrings: [String] = []
+    
     // The currently selected category for the new transaction
     var category: String = ""
     
@@ -111,9 +114,15 @@ class TransactionDetailsViewController: NSViewController
         self.title = "Transaction Details"
         
         // Add categories to category popup button
-        // TODO: Load custom categories and add them too
         categoryPopUpButton.removeAllItems()
         categoryPopUpButton.addItems(withTitles: categoryStrings)
+        
+        // Load custom categories and add them too
+        if let loadedCustomCategory = UserDefaults.standard.stringArray(forKey: ViewController.SaveLoadKeys.CustomCategories)
+        {
+            customCategoryStrings = loadedCustomCategory
+        }
+        categoryPopUpButton.addItems(withTitles: customCategoryStrings)
     }
     
     override func viewDidAppear()

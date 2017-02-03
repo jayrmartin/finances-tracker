@@ -10,18 +10,29 @@ import Cocoa
 
 class ViewController: NSViewController
 {
+    // Save/load keys for UserDefaults
+    enum SaveLoadKeys
+    {
+        static let LastOwner = "lastOwner"
+        static let Owners = "owners"
+        static let CustomCategories = "customCategories"
+    }
+    
     // References to specific UI objects
     @IBOutlet weak var newButton: NSButton!
     @IBOutlet weak var loadButton: NSButton!
     @IBOutlet weak var addButton: NSButton!
     @IBOutlet weak var transactionsTableView: NSTableView!
+    @IBOutlet weak var ownersTableView: NSTableView!
     
     // List of existing transactions
     fileprivate var transactions: [NSManagedObject] = []
     
     // Current "owner" of the displayed transactions
-    // TODO: This should be allowed to be changed -- for now just keep as "Sample"
     fileprivate var transactionsOwner: String = "Sample"
+    
+    // List of "owners"
+    fileprivate var ownersStrings: [String] = []
     
     // Separate view controller to add or edit transaction details
     fileprivate lazy var transactionDetailsViewController: TransactionDetailsViewController = {
@@ -46,10 +57,7 @@ class ViewController: NSViewController
     {
         print("Load Button Pressed")
         
-        // TODO: Set the owner of the transactions
-        
-        // Load up transactions
-        loadTransactions(updateView: true)
+        setOwnerAndLoadTransactions()
     }
     
     @IBAction func handleAddButtonPress(_ sender: Any)
@@ -82,7 +90,20 @@ class ViewController: NSViewController
             transactionEntityDescription = NSEntityDescription.entity(forEntityName: "Transaction", in: managedContext)!
         }
         
+        // Load last "owner"
+        if let loadedLastOwner = UserDefaults.standard.string(forKey: SaveLoadKeys.LastOwner)
+        {
+            transactionsOwner = loadedLastOwner
+        }
+        
+        // Load all owners
+        if let loadedOwners = UserDefaults.standard.stringArray(forKey: SaveLoadKeys.Owners)
+        {
+            ownersStrings = loadedOwners
+        }
+        
         setupTransactionsTableView()
+        setupOwnersTableView()
     }
 
     override var representedObject: Any?
@@ -117,7 +138,7 @@ class ViewController: NSViewController
     func transactionsTableViewDoubleClick(_ sender:AnyObject)
     {
         // Check for selected row -- a double-click on empty area in the table view will set selectedRow to -1
-        guard transactionsTableView.selectedRow >= 0 || transactionsTableView.selectedRow >= transactions.count else {
+        guard transactionsTableView.selectedRow >= 0 && transactionsTableView.selectedRow < transactions.count else {
             return
         }
         
@@ -347,6 +368,48 @@ class ViewController: NSViewController
         // Reset selected row
         transactionsTableSelectedRowForEdit = -1
     }
+    
+    // Helper function to set up the owners table view
+    fileprivate func setupOwnersTableView()
+    {
+        // Tell the owners view about delegate and data source
+        ownersTableView.delegate = self
+        ownersTableView.dataSource = self
+        
+        // For handling double clicks in the table view
+        ownersTableView.target = self
+        ownersTableView.doubleAction = #selector(ownersTableViewDoubleClick(_:))
+    }
+    
+    func ownersTableViewDoubleClick(_ sender:AnyObject)
+    {
+        setOwnerAndLoadTransactions()
+    }
+    
+    // Helper function to change the current owner to selected one in the table and load those transactions
+    fileprivate func setOwnerAndLoadTransactions()
+    {
+        print( "setNewOwner: \(ownersTableView.selectedRow)" )
+        
+        // Check for selected row -- a double-click on empty area in the table view will set selectedRow to -1
+        guard ownersTableView.selectedRow >= 0 && ownersTableView.selectedRow < ownersStrings.count else {
+            return
+        }
+        
+        // Grab string from selected row for editing
+        let newOwnerString: String = ownersStrings[ownersTableView.selectedRow]
+        
+        if newOwnerString != transactionsOwner
+        {
+            transactionsOwner = newOwnerString
+            
+            // Save out last owner
+            UserDefaults.standard.set(transactionsOwner, forKey: SaveLoadKeys.LastOwner)
+            
+            // Now load the transactions for the new owner
+            loadTransactions(updateView: true)
+        }
+    }
 }
 
 // Extension for the table view data source
@@ -355,40 +418,53 @@ extension ViewController: NSTableViewDataSource
     // Return the number of rows that should be shown
     func numberOfRows(in tableView: NSTableView) -> Int
     {
-        return transactions.count
+        var numRows: Int = -1
+        if tableView == transactionsTableView
+        {
+            numRows = transactions.count
+        }
+        else if tableView == ownersTableView
+        {
+            numRows = ownersStrings.count
+        }
+        
+        return numRows
     }
     
     // Sort data based on sort descriptor in column that was changed
     func tableView(_ tableView: NSTableView, sortDescriptorsDidChange oldDescriptors: [NSSortDescriptor])
     {
-        // Retrieve the first sort descriptor that corresponds to the column clicked by the user
-        guard let sortDescriptor = transactionsTableView.sortDescriptors.first else {
-            return
-        }
-        
-        let sortKey = sortDescriptor.key!
-        let sortAscending = sortDescriptor.ascending
-        
-        // print("Need to sort: \(sortKey) in order \(sortAscending)")
-        if sortKey == TransactionData.TransactionAttributes.date.rawValue
+        if tableView == transactionsTableView
         {
-            transactions.sort(by: sortAscending ? sortTransactionByDateAscending : sortTransactionByDateDescending)
+            // Retrieve the first sort descriptor that corresponds to the column clicked by the user
+            guard let sortDescriptor = transactionsTableView.sortDescriptors.first else {
+                return
+            }
+            
+            let sortKey = sortDescriptor.key!
+            let sortAscending = sortDescriptor.ascending
+            
+            // print("Need to sort: \(sortKey) in order \(sortAscending)")
+            if sortKey == TransactionData.TransactionAttributes.date.rawValue
+            {
+                transactions.sort(by: sortAscending ? sortTransactionByDateAscending : sortTransactionByDateDescending)
+            }
+            else if sortKey == TransactionData.TransactionAttributes.category.rawValue
+            {
+                transactions.sort(by: sortAscending ? sortTransactionByCategoryAscending : sortTransactionByCategoryDescending)
+            }
+            else if sortKey == TransactionData.TransactionAttributes.amount.rawValue
+            {
+                transactions.sort(by: sortAscending ? sortTransactionByAmountAscending : sortTransactionByAmountDescending)
+            }
+            else if sortKey == TransactionData.TransactionAttributes.vendor.rawValue
+            {
+                transactions.sort(by: sortAscending ? sortTransactionByVendorAscending : sortTransactionByVendorDescending)
+            }
+            
+            // Reload table now that array is sorted
+            transactionsTableView.reloadData()
         }
-        else if sortKey == TransactionData.TransactionAttributes.category.rawValue
-        {
-            transactions.sort(by: sortAscending ? sortTransactionByCategoryAscending : sortTransactionByCategoryDescending)
-        }
-        else if sortKey == TransactionData.TransactionAttributes.amount.rawValue
-        {
-            transactions.sort(by: sortAscending ? sortTransactionByAmountAscending : sortTransactionByAmountDescending)
-        }
-        else if sortKey == TransactionData.TransactionAttributes.vendor.rawValue
-        {
-            transactions.sort(by: sortAscending ? sortTransactionByVendorAscending : sortTransactionByVendorDescending)
-        }
-        
-        // Reload table now that array is sorted
-        transactionsTableView.reloadData()
     }
 }
 
@@ -401,67 +477,94 @@ extension ViewController: NSTableViewDelegate
         static let CategoryCell = "CategoryCellID"
         static let AmountCell = "AmountCellID"
         static let VendorCell = "VendorCellID"
+        static let OwnersCell = "OwnersCellID"
     }
     
     // Build each cell based on given column and row
     func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView?
     {
-        var text: String = ""
-        var cellIdentifier: String = ""
-        
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateStyle = DateFormatter.Style.short
-        dateFormatter.timeStyle = DateFormatter.Style.none
-        
-        let currencyFormatter = NumberFormatter()
-        currencyFormatter.numberStyle = NumberFormatter.Style.currency
-        
-        // Check for transaction at the given row
-        if row >= transactions.count
+        if tableView == transactionsTableView
         {
-            return nil
-        }
-        
-        let transaction = transactions[row]
-        
-        // Check which column and populate the information
-        if tableColumn == tableView.tableColumns[0]
-        {
-            // Date
-            text = dateFormatter.string(from: (transaction.value(forKey: TransactionData.TransactionAttributes.date.rawValue) as? Date)!)
-            cellIdentifier = CellIdentifiers.DateCell
-        }
-        else if tableColumn == tableView.tableColumns[1]
-        {
-            // Category
-            text = (transaction.value(forKey: TransactionData.TransactionAttributes.category.rawValue) as? String)!
-            cellIdentifier = CellIdentifiers.CategoryCell
-        }
-        else if tableColumn == tableView.tableColumns[2]
-        {
-            // Amount
-            if let formattedCurrencyString = currencyFormatter.string(from: NSNumber(value: (transaction.value(forKey: TransactionData.TransactionAttributes.amount.rawValue) as? Double)!))
+            var text: String = ""
+            var cellIdentifier: String = ""
+            
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateStyle = DateFormatter.Style.short
+            dateFormatter.timeStyle = DateFormatter.Style.none
+            
+            let currencyFormatter = NumberFormatter()
+            currencyFormatter.numberStyle = NumberFormatter.Style.currency
+            
+            // Check for transaction at the given row
+            if row >= transactions.count
             {
-                text = formattedCurrencyString
+                return nil
             }
-            else
+            
+            let transaction = transactions[row]
+            
+            // Check which column and populate the information
+            if tableColumn == tableView.tableColumns[0]
             {
-                text = ""
+                // Date
+                text = dateFormatter.string(from: (transaction.value(forKey: TransactionData.TransactionAttributes.date.rawValue) as? Date)!)
+                cellIdentifier = CellIdentifiers.DateCell
             }
-            cellIdentifier = CellIdentifiers.AmountCell
+            else if tableColumn == tableView.tableColumns[1]
+            {
+                // Category
+                text = (transaction.value(forKey: TransactionData.TransactionAttributes.category.rawValue) as? String)!
+                cellIdentifier = CellIdentifiers.CategoryCell
+            }
+            else if tableColumn == tableView.tableColumns[2]
+            {
+                // Amount
+                if let formattedCurrencyString = currencyFormatter.string(from: NSNumber(value: (transaction.value(forKey: TransactionData.TransactionAttributes.amount.rawValue) as? Double)!))
+                {
+                    text = formattedCurrencyString
+                }
+                else
+                {
+                    text = ""
+                }
+                cellIdentifier = CellIdentifiers.AmountCell
+            }
+            else if tableColumn == tableView.tableColumns[3]
+            {
+                // Vendor
+                text = (transaction.value(forKey: TransactionData.TransactionAttributes.vendor.rawValue) as? String)!
+                cellIdentifier = CellIdentifiers.VendorCell
+            }
+            
+            // Create the cell with the information
+            if let cell = tableView.make(withIdentifier: cellIdentifier, owner: nil) as? NSTableCellView
+            {
+                cell.textField?.stringValue = text
+                return cell
+            }
         }
-        else if tableColumn == tableView.tableColumns[3]
+        else if tableView == ownersTableView
         {
-            // Vendor
-            text = (transaction.value(forKey: TransactionData.TransactionAttributes.vendor.rawValue) as? String)!
-            cellIdentifier = CellIdentifiers.VendorCell
-        }
-        
-        // Create the cell with the information
-        if let cell = tableView.make(withIdentifier: cellIdentifier, owner: nil) as? NSTableCellView
-        {
-            cell.textField?.stringValue = text
-            return cell
+            var text: String = ""
+            var cellIdentifier: String = ""
+            
+            // Check for transaction at the given row
+            if row >= ownersStrings.count
+            {
+                return nil
+            }
+            
+            // Grab string from selected row for editing
+            let ownerString: String = ownersStrings[row]
+            text = ownerString
+            cellIdentifier = CellIdentifiers.OwnersCell
+            
+            // Create the cell with the information
+            if let cell = tableView.make(withIdentifier: cellIdentifier, owner: nil) as? NSTableCellView
+            {
+                cell.textField?.stringValue = text
+                return cell
+            }
         }
         
         return nil
