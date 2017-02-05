@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		206CCA281E47CC7B00724653 /* ErrorMessageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 206CCA271E47CC7B00724653 /* ErrorMessageViewController.swift */; };
 		207657E11E33F8CC008B6187 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 207657E01E33F8CC008B6187 /* AppDelegate.swift */; };
 		207657E31E33F8CC008B6187 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 207657E21E33F8CC008B6187 /* ViewController.swift */; };
 		207657E61E33F8CC008B6187 /* Finances_Tracker.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 207657E41E33F8CC008B6187 /* Finances_Tracker.xcdatamodeld */; };
@@ -18,6 +19,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		206CCA271E47CC7B00724653 /* ErrorMessageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ErrorMessageViewController.swift; sourceTree = "<group>"; };
 		207657DD1E33F8CC008B6187 /* Finances-Tracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Finances-Tracker.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		207657E01E33F8CC008B6187 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		207657E21E33F8CC008B6187 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -69,6 +71,7 @@
 				208EF9541E351624008FB4E4 /* TransactionDetailsViewController.swift */,
 				208EF9561E3527D7008FB4E4 /* TransactionData.swift */,
 				20CF43451E45069C009A7554 /* OwnerDetailsViewController.swift */,
+				206CCA271E47CC7B00724653 /* ErrorMessageViewController.swift */,
 			);
 			path = "Finances-Tracker";
 			sourceTree = "<group>";
@@ -146,6 +149,7 @@
 			files = (
 				20CF43461E45069C009A7554 /* OwnerDetailsViewController.swift in Sources */,
 				208EF9551E351624008FB4E4 /* TransactionDetailsViewController.swift in Sources */,
+				206CCA281E47CC7B00724653 /* ErrorMessageViewController.swift in Sources */,
 				208EF9571E3527D7008FB4E4 /* TransactionData.swift in Sources */,
 				207657E61E33F8CC008B6187 /* Finances_Tracker.xcdatamodeld in Sources */,
 				207657E31E33F8CC008B6187 /* ViewController.swift in Sources */,

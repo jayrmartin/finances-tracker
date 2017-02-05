@@ -53,7 +53,7 @@ class TransactionDetailsViewController: NSViewController
     {
         let btn = sender as! NSPopUpButton
         category = btn.titleOfSelectedItem!
-        print("Selected Item: \(category)")
+        //print("Selected Item: \(category)")
     }
     
     @IBAction func handleAddOrEditButtonPress(_ sender: Any)
@@ -79,7 +79,7 @@ class TransactionDetailsViewController: NSViewController
         
         if editingExistingTransaction
         {
-            print("Edit Transaction! Vendor: \(vendor) Amount: \(amount) Category: \(category)")
+            //print("Edit Transaction! Vendor: \(vendor) Amount: \(amount) Category: \(category)")
             
             // Use callback to update data
             if let editCallbackFunction = editTransactionCallbackFunction
@@ -90,7 +90,7 @@ class TransactionDetailsViewController: NSViewController
         }
         else
         {
-            print("New Transaction! Vendor: \(vendor) Amount: \(amount) Category: \(category)")
+            //print("New Transaction! Vendor: \(vendor) Amount: \(amount) Category: \(category)")
             
             // Add transaction to data
             if let addCallbackFunction = addTransactionCallbackFunction

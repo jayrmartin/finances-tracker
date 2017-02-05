@@ -30,6 +30,9 @@ class ViewController: NSViewController
     @IBOutlet weak var newButton: NSButton!
     @IBOutlet weak var loadButton: NSButton!
     @IBOutlet weak var addButton: NSButton!
+    @IBOutlet weak var editButton: NSButton!
+    @IBOutlet weak var deleteButton: NSButton!
+    
     @IBOutlet weak var transactionsTableView: NSTableView!
     @IBOutlet weak var ownersTableView: NSTableView!
     
@@ -59,19 +62,25 @@ class ViewController: NSViewController
         return self.storyboard!.instantiateController(withIdentifier: "OwnerDetailsViewController") as! OwnerDetailsViewController
     }()
     
+    // Separate view controller for error message
+    fileprivate lazy var errorMessageViewController: ErrorMessageViewController = {
+        return self.storyboard!.instantiateController(withIdentifier: "ErrorMessageViewController") as! ErrorMessageViewController
+    }()
+    
     // Managed context for Core Data
     fileprivate var cdManagedContext: NSManagedObjectContext?
     
     // Transaction entity description
     fileprivate var transactionEntityDescription: NSEntityDescription?
     
-    // The row that is currently selected for editing
+    // The transaction row that is currently selected for editing
     fileprivate var transactionsTableSelectedRowForEdit: Int = -1
+    
+    // The transaction rows that are selected for deletion
+    fileprivate var transactionsTableSelectedRowsForDelete: IndexSet = []
     
     @IBAction func handleNewButtonPress(_ sender: Any)
     {
-        print("New Button Pressed!")
-        
         // Set callback function for adding owners
         ownerDetailsViewController.addOwnerCallbackFunction = addOwner
         
@@ -81,21 +90,49 @@ class ViewController: NSViewController
     
     @IBAction func handleLoadButtonPress(_ sender: Any)
     {
-        print("Load Button Pressed")
-        
         setOwnerAndLoadTransactions()
     }
     
     @IBAction func handleAddButtonPress(_ sender: Any)
     {
-        print("Add Button Pressed")
-        
         // Set callback function for adding transactions
         transactionDetailsViewController.addTransactionCallbackFunction = addNewTransaction
         
         // Show the transaction details view controller
-        //self.presentViewControllerAsSheet(transactionDetailsViewController)
         self.presentViewControllerAsModalWindow(transactionDetailsViewController)
+    }
+    
+    @IBAction func handleEditButtonPress(_ sender: Any)
+    {
+        // This behaviour is the same as double click on table row
+        openTransactionDetailsForEdit()
+    }
+    
+    @IBAction func handleDeleteButtonPress(_ sender: Any)
+    {
+        let selectedRows: IndexSet = transactionsTableView.selectedRowIndexes
+        guard selectedRows.count > 0 else {
+            return
+        }
+        
+        // Save the selected rows
+        transactionsTableSelectedRowsForDelete = selectedRows
+        
+        // Open confirmation dialog
+        var messageStr = "Are you sure you want to delete the selected"
+        if transactionsTableSelectedRowsForDelete.count == 1
+        {
+            messageStr += " transaction?"
+        }
+        else
+        {
+            messageStr += " transactions?"
+        }
+        
+        errorMessageViewController.errorMessageString = messageStr
+        errorMessageViewController.okCallbackFunction = deleteTransactions
+        
+        self.presentViewControllerAsSheet(errorMessageViewController)
     }
     
     override func viewDidLoad()
@@ -173,7 +210,14 @@ class ViewController: NSViewController
     
     func transactionsTableViewDoubleClick(_ sender:AnyObject)
     {
-        // Check for selected row -- a double-click on empty area in the table view will set selectedRow to -1
+        openTransactionDetailsForEdit()
+    }
+    
+    // Helper function to open the transaction details view to edit a transaction
+    fileprivate func openTransactionDetailsForEdit()
+    {
+        // Check for selected row
+        // NOTE: A double-click on empty area in the table view will set selectedRow to -1
         guard transactionsTableView.selectedRow >= 0 && transactionsTableView.selectedRow < transactions.count else {
             return
         }
@@ -406,6 +450,53 @@ class ViewController: NSViewController
         
         // Reset selected row
         transactionsTableSelectedRowForEdit = -1
+    }
+    
+    func deleteTransactions()
+    {
+        // Sanity check the selected row(s)
+        if transactionsTableSelectedRowsForDelete.count < 0
+        {
+            return
+        }
+        
+        // Sanity check the managed context
+        guard let managedContext = cdManagedContext else
+        {
+            // Reset selected row(s)
+            transactionsTableSelectedRowsForDelete.removeAll()
+            
+            return
+        }
+        
+        // Delete the objects from managed context
+        for deleteIdx in transactionsTableSelectedRowsForDelete.reversed()
+        {
+            managedContext.delete(transactions[deleteIdx])
+        }
+        
+        // "Commit" changes to the managed object context by calling save
+        do
+        {
+            try managedContext.save()
+            
+            // Delete the rows from the table
+            for deleteIdx in transactionsTableSelectedRowsForDelete.reversed()
+            {
+                transactions.remove(at: deleteIdx)
+            }
+            
+            // Update table view
+            transactionsTableView.reloadData()
+        }
+        catch let error as NSError
+        {
+            // TODO: Show error to user
+            print("Could not save. \(error), \(error.userInfo)")
+        }
+        
+        // Reset selected row(s)
+        transactionsTableSelectedRowsForDelete.removeAll()
     }
     
     // Helper function to set up the owners table view

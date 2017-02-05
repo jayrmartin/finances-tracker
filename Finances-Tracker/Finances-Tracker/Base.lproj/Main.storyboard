@@ -444,7 +444,7 @@
                                     <rect key="frame" x="1" y="0.0" width="795" height="678"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" alternatingRowBackgroundColors="YES" columnSelection="YES" multipleSelection="NO" autosaveColumns="NO" rowSizeStyle="automatic" headerView="LkS-Qn-nl0" viewBased="YES" id="1Kb-zk-3Bm">
+                                        <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" alternatingRowBackgroundColors="YES" columnSelection="YES" autosaveColumns="NO" rowSizeStyle="automatic" headerView="LkS-Qn-nl0" viewBased="YES" id="1Kb-zk-3Bm">
                                             <rect key="frame" x="0.0" y="0.0" width="795" height="655"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <size key="intercellSpacing" width="3" height="2"/>
@@ -693,6 +693,28 @@
                                     <action selector="handleLoadButtonPress:" target="XfG-lQ-9wD" id="udP-c7-h52"/>
                                 </connections>
                             </button>
+                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="vkB-tl-Kqj">
+                                <rect key="frame" x="788" y="-1" width="81" height="32"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="push" title="Edit" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="3gX-SX-E8e">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="handleEditButtonPress:" target="XfG-lQ-9wD" id="McE-Or-gAp"/>
+                                </connections>
+                            </button>
+                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="CXi-85-H2Z">
+                                <rect key="frame" x="698" y="-1" width="81" height="32"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="push" title="Delete" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="ljr-XC-Lgq">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="handleDeleteButtonPress:" target="XfG-lQ-9wD" id="IBQ-QW-YLK"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <constraints>
                             <constraint firstAttribute="trailing" secondItem="dvH-lR-WTF" secondAttribute="trailing" constant="7" id="0Vr-GS-Qln"/>
@@ -718,6 +740,8 @@
                     </view>
                     <connections>
                         <outlet property="addButton" destination="ncY-U1-2dZ" id="Q7X-XU-z34"/>
+                        <outlet property="deleteButton" destination="CXi-85-H2Z" id="B9p-HJ-g9Z"/>
+                        <outlet property="editButton" destination="vkB-tl-Kqj" id="s3R-xc-ath"/>
                         <outlet property="loadButton" destination="P3r-Pe-5Yw" id="kTn-5x-fFX"/>
                         <outlet property="newButton" destination="s0O-K0-FKi" id="RcQ-t6-4Pa"/>
                         <outlet property="ownersTableView" destination="R2Y-8C-QPI" id="Sqe-6N-ndl"/>
@@ -793,6 +817,63 @@ Gw
                 <customObject id="duX-ez-3AJ" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="827" y="1085"/>
+        </scene>
+        <!--Error Message View Controller-->
+        <scene sceneID="pqg-sB-d6e">
+            <objects>
+                <viewController storyboardIdentifier="ErrorMessageViewController" id="teB-sg-ihg" customClass="ErrorMessageViewController" customModule="Finances_Tracker" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" id="Pbf-fi-q9k">
+                        <rect key="frame" x="0.0" y="0.0" width="400" height="200"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <subviews>
+                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="kmQ-rF-f8G">
+                                <rect key="frame" x="242" y="-1" width="80" height="32"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="push" title="OK" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="GM8-Ii-dhY">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                    <string key="keyEquivalent" base64-UTF8="YES">
+DQ
+</string>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="handleOkButtonPress:" target="teB-sg-ihg" id="R5M-Gq-uTh"/>
+                                </connections>
+                            </button>
+                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="z3u-QW-egk">
+                                <rect key="frame" x="78" y="-1" width="80" height="32"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="push" title="Cancel" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="0fD-6P-eK3">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                    <string key="keyEquivalent" base64-UTF8="YES">
+Gw
+</string>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="dismissController:" target="teB-sg-ihg" id="0rB-Gf-GJf"/>
+                                </connections>
+                            </button>
+                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="uTD-Ir-44N">
+                                <rect key="frame" x="32" y="91" width="336" height="78"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="center" title="Multiline Label" id="F7a-4t-NTg">
+                                    <font key="font" metaFont="system"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                        </subviews>
+                    </view>
+                    <connections>
+                        <outlet property="cancelButton" destination="z3u-QW-egk" id="KK6-a5-GDG"/>
+                        <outlet property="errorMessageTextField" destination="uTD-Ir-44N" id="0SE-OV-0HX"/>
+                        <outlet property="okButton" destination="kmQ-rF-f8G" id="K4F-Ru-E2z"/>
+                    </connections>
+                </viewController>
+                <customObject id="a2Y-Nw-zCF" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="827" y="488"/>
         </scene>
         <!--Transaction Details View Controller-->
         <scene sceneID="Den-3W-Yov">
