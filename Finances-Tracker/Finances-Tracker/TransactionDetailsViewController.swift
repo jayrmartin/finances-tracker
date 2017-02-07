@@ -10,28 +10,16 @@ import Cocoa
 
 class TransactionDetailsViewController: NSViewController
 {
-    // Array of base options in the category popup button
-    fileprivate var categoryStrings: [String] = [
-        "Mortgage",
-        "Cable and Internet",
-        "Grocery",
-        "Dining Out",
-        "Alcohol"
-    ]
-    
-    // Array of custom categories
-    fileprivate var customCategoryStrings: [String] = []
-    
-    // The currently selected category for the new transaction
+    // The currently selected category for the transaction
     var category: String = ""
     
-    // The date entered for the new transaction
+    // The date entered for the transaction
     var date: Date = Date()
     
-    // The vendor entered for the new transaction
+    // The vendor entered for the transaction
     var vendor: String = ""
     
-    // The amount entered for the new transaction
+    // The amount entered for the transaction
     var amount: Double = 0
     
     // Whether the view controller is being used to edit an existing transaction
@@ -42,12 +30,20 @@ class TransactionDetailsViewController: NSViewController
     
     // Callback function for editing a transaction
     var editTransactionCallbackFunction: ((TransactionData, Bool) -> Void)?
+    
+    // Separate view controller for custom categories
+    fileprivate lazy var customCategoriesViewController: CustomCategoryViewController = {
+        return self.storyboard!.instantiateController(withIdentifier: "CustomCategoryViewController") as! CustomCategoryViewController
+    }()
+    
+    var categoryData: CategoryData = CategoryData()
 
     @IBOutlet weak var categoryPopUpButton: NSPopUpButton!
     @IBOutlet weak var datePicker: NSDatePicker!
     @IBOutlet weak var vendorTextField: NSTextField!
     @IBOutlet weak var amountTextField: NSTextField!
     @IBOutlet weak var addEditButton: NSButton!
+    @IBOutlet weak var editCategoriesButton: NSButton!
     
     @IBAction func handleCategoryPopUpButtonChoice(_ sender: Any)
     {
@@ -107,22 +103,21 @@ class TransactionDetailsViewController: NSViewController
         self.dismissViewController(self)
     }
     
+    @IBAction func handleEditCategoriesButtonPress(_ sender: Any)
+    {
+        // Set the category data object
+        customCategoriesViewController.categoryData = categoryData
+        customCategoriesViewController.updateCategoryDataCallbackFunction = updateCategories
+        
+        // Show the view for custom categories
+        self.presentViewControllerAsModalWindow(customCategoriesViewController)
+    }
+    
     override func viewDidLoad()
     {
         super.viewDidLoad()
         
         self.title = "Transaction Details"
-        
-        // Add categories to category popup button
-        categoryPopUpButton.removeAllItems()
-        categoryPopUpButton.addItems(withTitles: categoryStrings)
-        
-        // Load custom categories and add them too
-        if let loadedCustomCategory = UserDefaults.standard.stringArray(forKey: ViewController.SaveLoadKeys.CustomCategories)
-        {
-            customCategoryStrings = loadedCustomCategory
-        }
-        categoryPopUpButton.addItems(withTitles: customCategoryStrings)
     }
     
     override func viewDidAppear()
@@ -133,6 +128,8 @@ class TransactionDetailsViewController: NSViewController
     override func viewWillAppear()
     {
         super.viewWillAppear()
+        
+        updateCategories()
         
         if editingExistingTransaction
         {
@@ -163,7 +160,7 @@ class TransactionDetailsViewController: NSViewController
     func setDefaultDetailValues()
     {
         // Set current category to first item in the list
-        category = self.categoryStrings[0]
+        category = categoryData.categoryStrings[0]
         categoryPopUpButton.selectItem(withTitle: category)
         
         // Set date to current date
@@ -181,5 +178,16 @@ class TransactionDetailsViewController: NSViewController
         date = transaction.date
         vendor = transaction.vendor
         amount = transaction.amount
+    }
+    
+    // Update the categories in the pop up button
+    func updateCategories()
+    {
+        // Add categories to category popup button
+        categoryPopUpButton.removeAllItems()
+        categoryPopUpButton.addItems(withTitles: categoryData.categoryStrings)
+        
+        // Add the custom categories too
+        categoryPopUpButton.addItems(withTitles: categoryData.customCategoryStrings)
     }
 }
