@@ -715,6 +715,17 @@
                                     <action selector="handleDeleteButtonPress:" target="XfG-lQ-9wD" id="IBQ-QW-YLK"/>
                                 </connections>
                             </button>
+                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Cx1-qh-SLM">
+                                <rect key="frame" x="608" y="-1" width="81" height="32"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="push" title="Analyze" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="JZb-FJ-PHc">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="handleAnalyzeButtonPress:" target="XfG-lQ-9wD" id="B2x-Bb-plm"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <constraints>
                             <constraint firstAttribute="trailing" secondItem="dvH-lR-WTF" secondAttribute="trailing" constant="7" id="0Vr-GS-Qln"/>
@@ -740,6 +751,7 @@
                     </view>
                     <connections>
                         <outlet property="addButton" destination="ncY-U1-2dZ" id="Q7X-XU-z34"/>
+                        <outlet property="analyzeButton" destination="Cx1-qh-SLM" id="2N1-Sy-XzF"/>
                         <outlet property="deleteButton" destination="CXi-85-H2Z" id="B9p-HJ-g9Z"/>
                         <outlet property="editButton" destination="vkB-tl-Kqj" id="s3R-xc-ath"/>
                         <outlet property="loadButton" destination="P3r-Pe-5Yw" id="kTn-5x-fFX"/>
@@ -1109,7 +1121,7 @@ Gw
                                     </subviews>
                                 </clipView>
                                 <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="vOa-cV-bpb">
-                                    <rect key="frame" x="1" y="119" width="223" height="15"/>
+                                    <rect key="frame" x="1" y="8" width="0.0" height="15"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
                                 <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="hkN-0e-2dX">
@@ -1144,6 +1156,34 @@ Gw
                 <customObject id="69P-Fg-IZH" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1278" y="588"/>
+        </scene>
+        <!--Pie Chart-->
+        <scene sceneID="sTk-B1-1pa">
+            <objects>
+                <viewController title="Pie Chart" storyboardIdentifier="PieChartViewController" id="nfy-bG-HbP" customClass="PieChartViewController" customModule="Finances_Tracker" sceneMemberID="viewController">
+                    <view key="view" id="8i3-XY-V4z" customClass="PieChartView" customModule="Finances_Tracker">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="400"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <subviews>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZMD-K5-ucZ">
+                                <rect key="frame" x="158" y="241" width="135" height="17"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="NO DATA" id="EGa-Rs-sS7">
+                                    <font key="font" metaFont="system"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                        </subviews>
+                    </view>
+                    <connections>
+                        <outlet property="noDataTextField" destination="ZMD-K5-ucZ" id="uYc-Nk-5pu"/>
+                        <outlet property="pieChartView" destination="8i3-XY-V4z" id="XkF-8V-T7b"/>
+                    </connections>
+                </viewController>
+                <customObject id="nep-KK-T9H" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1479" y="1170"/>
         </scene>
     </scenes>
     <resources>

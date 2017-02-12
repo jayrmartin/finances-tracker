@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		202BD7551E4A56FA00A822FC /* CustomCategoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 202BD7541E4A56FA00A822FC /* CustomCategoryViewController.swift */; };
 		202BD7571E4A5ACA00A822FC /* CategoryData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 202BD7561E4A5ACA00A822FC /* CategoryData.swift */; };
+		203C28FE1E4E1D9400C63D98 /* TransactionsChartData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 203C28FD1E4E1D9400C63D98 /* TransactionsChartData.swift */; };
 		206CCA281E47CC7B00724653 /* ErrorMessageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 206CCA271E47CC7B00724653 /* ErrorMessageViewController.swift */; };
 		207657E11E33F8CC008B6187 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 207657E01E33F8CC008B6187 /* AppDelegate.swift */; };
 		207657E31E33F8CC008B6187 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 207657E21E33F8CC008B6187 /* ViewController.swift */; };
@@ -18,11 +19,14 @@
 		208EF9551E351624008FB4E4 /* TransactionDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 208EF9541E351624008FB4E4 /* TransactionDetailsViewController.swift */; };
 		208EF9571E3527D7008FB4E4 /* TransactionData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 208EF9561E3527D7008FB4E4 /* TransactionData.swift */; };
 		20CF43461E45069C009A7554 /* OwnerDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20CF43451E45069C009A7554 /* OwnerDetailsViewController.swift */; };
+		20F4FF791E4CE7120026EB63 /* PieChartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20F4FF781E4CE7120026EB63 /* PieChartViewController.swift */; };
+		20F4FF7B1E4CF9160026EB63 /* PieChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20F4FF7A1E4CF9160026EB63 /* PieChartView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		202BD7541E4A56FA00A822FC /* CustomCategoryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomCategoryViewController.swift; sourceTree = "<group>"; };
 		202BD7561E4A5ACA00A822FC /* CategoryData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CategoryData.swift; sourceTree = "<group>"; };
+		203C28FD1E4E1D9400C63D98 /* TransactionsChartData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransactionsChartData.swift; sourceTree = "<group>"; };
 		206CCA271E47CC7B00724653 /* ErrorMessageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ErrorMessageViewController.swift; sourceTree = "<group>"; };
 		207657DD1E33F8CC008B6187 /* Finances-Tracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Finances-Tracker.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		207657E01E33F8CC008B6187 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -34,6 +38,8 @@
 		208EF9541E351624008FB4E4 /* TransactionDetailsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransactionDetailsViewController.swift; sourceTree = "<group>"; };
 		208EF9561E3527D7008FB4E4 /* TransactionData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransactionData.swift; sourceTree = "<group>"; };
 		20CF43451E45069C009A7554 /* OwnerDetailsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OwnerDetailsViewController.swift; sourceTree = "<group>"; };
+		20F4FF781E4CE7120026EB63 /* PieChartViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PieChartViewController.swift; sourceTree = "<group>"; };
+		20F4FF7A1E4CF9160026EB63 /* PieChartView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PieChartView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -74,10 +80,13 @@
 				207657EC1E33F8CC008B6187 /* Info.plist */,
 				207657E41E33F8CC008B6187 /* Finances_Tracker.xcdatamodeld */,
 				208EF9541E351624008FB4E4 /* TransactionDetailsViewController.swift */,
+				20F4FF7A1E4CF9160026EB63 /* PieChartView.swift */,
+				20F4FF781E4CE7120026EB63 /* PieChartViewController.swift */,
 				202BD7561E4A5ACA00A822FC /* CategoryData.swift */,
 				208EF9561E3527D7008FB4E4 /* TransactionData.swift */,
 				20CF43451E45069C009A7554 /* OwnerDetailsViewController.swift */,
 				206CCA271E47CC7B00724653 /* ErrorMessageViewController.swift */,
+				203C28FD1E4E1D9400C63D98 /* TransactionsChartData.swift */,
 			);
 			path = "Finances-Tracker";
 			sourceTree = "<group>";
@@ -157,8 +166,11 @@
 				202BD7571E4A5ACA00A822FC /* CategoryData.swift in Sources */,
 				202BD7551E4A56FA00A822FC /* CustomCategoryViewController.swift in Sources */,
 				208EF9551E351624008FB4E4 /* TransactionDetailsViewController.swift in Sources */,
+				20F4FF7B1E4CF9160026EB63 /* PieChartView.swift in Sources */,
 				206CCA281E47CC7B00724653 /* ErrorMessageViewController.swift in Sources */,
 				208EF9571E3527D7008FB4E4 /* TransactionData.swift in Sources */,
+				203C28FE1E4E1D9400C63D98 /* TransactionsChartData.swift in Sources */,
+				20F4FF791E4CE7120026EB63 /* PieChartViewController.swift in Sources */,
 				207657E61E33F8CC008B6187 /* Finances_Tracker.xcdatamodeld in Sources */,
 				207657E31E33F8CC008B6187 /* ViewController.swift in Sources */,
 				207657E11E33F8CC008B6187 /* AppDelegate.swift in Sources */,

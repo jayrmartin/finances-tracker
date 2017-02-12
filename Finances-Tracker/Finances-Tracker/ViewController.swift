@@ -32,6 +32,7 @@ class ViewController: NSViewController
     @IBOutlet weak var addButton: NSButton!
     @IBOutlet weak var editButton: NSButton!
     @IBOutlet weak var deleteButton: NSButton!
+    @IBOutlet weak var analyzeButton: NSButton!
     
     @IBOutlet weak var transactionsTableView: NSTableView!
     @IBOutlet weak var ownersTableView: NSTableView!
@@ -67,6 +68,11 @@ class ViewController: NSViewController
         return self.storyboard!.instantiateController(withIdentifier: "ErrorMessageViewController") as! ErrorMessageViewController
     }()
     
+    // Separate view controller for charts and graphs of the data
+    fileprivate lazy var chartsGraphViewController: PieChartViewController = {
+        return self.storyboard!.instantiateController(withIdentifier: "PieChartViewController") as! PieChartViewController
+    }()
+    
     // Managed context for Core Data
     fileprivate var cdManagedContext: NSManagedObjectContext?
     
@@ -78,6 +84,9 @@ class ViewController: NSViewController
     
     // The transaction rows that are selected for deletion
     fileprivate var transactionsTableSelectedRowsForDelete: IndexSet = []
+    
+    // Object for managing categories
+    var categoryData: CategoryData = CategoryData()
     
     @IBAction func handleNewButtonPress(_ sender: Any)
     {
@@ -95,6 +104,8 @@ class ViewController: NSViewController
     
     @IBAction func handleAddButtonPress(_ sender: Any)
     {
+        transactionDetailsViewController.categoryData = categoryData
+        
         // Set callback function for adding transactions
         transactionDetailsViewController.addTransactionCallbackFunction = addNewTransaction
         
@@ -133,6 +144,12 @@ class ViewController: NSViewController
         errorMessageViewController.okCallbackFunction = deleteTransactions
         
         self.presentViewControllerAsSheet(errorMessageViewController)
+    }
+    
+    @IBAction func handleAnalyzeButtonPress(_ sender: Any)
+    {
+        chartsGraphViewController.transactionsData = TransactionsChartData(transactionData: transactions)
+        self.presentViewControllerAsModalWindow(chartsGraphViewController)
     }
     
     override func viewDidLoad()
@@ -240,6 +257,8 @@ class ViewController: NSViewController
         
         // Set callback function to edit a specific transaction
         transactionDetailsViewController.editTransactionCallbackFunction = editTransaction
+        
+        transactionDetailsViewController.categoryData = categoryData
         
         // Show view controller for editing
         self.presentViewControllerAsModalWindow(transactionDetailsViewController)

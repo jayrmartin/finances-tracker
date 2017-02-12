@@ -49,15 +49,15 @@ class CustomCategoryViewController: NSViewController
             
             // Reload the table
             categoriesTableView.reloadData()
+            
+            // Clear the text
+            addCategoryTextField.stringValue = ""
         }
         else
         {
             // TODO: show error message
             print("Failed to add new category name!")
         }
-        
-        // Clear the text
-        addCategoryTextField.stringValue = ""
     }
     
     @IBAction func handleDeleteCategoriesButtonPress(_ sender: Any)

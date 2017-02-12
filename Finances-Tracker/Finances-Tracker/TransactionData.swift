@@ -31,12 +31,19 @@ class TransactionData: NSObject
     var category: String = ""
     var amount: Double = 0
     var vendor: String = ""
+    var owner: String = ""
     
-    init(transactionDate: Date, transactionCategory: String, transactionAmount: Double, transactionVendor: String)
+    init(transactionDate: Date, transactionCategory: String, transactionAmount: Double, transactionVendor: String, transactionOwner: String)
     {
         date = transactionDate
         category = transactionCategory
         amount = transactionAmount
         vendor = transactionVendor
+        owner = transactionOwner
+    }
+    
+    convenience init(transactionDate: Date, transactionCategory: String, transactionAmount: Double, transactionVendor: String)
+    {
+        self.init(transactionDate: transactionDate, transactionCategory: transactionCategory, transactionAmount: transactionAmount, transactionVendor: transactionVendor, transactionOwner: "")
     }
 }

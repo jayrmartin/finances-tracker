@@ -36,7 +36,7 @@ class TransactionDetailsViewController: NSViewController
         return self.storyboard!.instantiateController(withIdentifier: "CustomCategoryViewController") as! CustomCategoryViewController
     }()
     
-    var categoryData: CategoryData = CategoryData()
+    var categoryData: CategoryData?
 
     @IBOutlet weak var categoryPopUpButton: NSPopUpButton!
     @IBOutlet weak var datePicker: NSDatePicker!
@@ -160,7 +160,14 @@ class TransactionDetailsViewController: NSViewController
     func setDefaultDetailValues()
     {
         // Set current category to first item in the list
-        category = categoryData.categoryStrings[0]
+        if let cd = categoryData
+        {
+            category = cd.categoryStrings[0]
+        }
+        else
+        {
+            category = ""
+        }
         categoryPopUpButton.selectItem(withTitle: category)
         
         // Set date to current date
@@ -183,11 +190,15 @@ class TransactionDetailsViewController: NSViewController
     // Update the categories in the pop up button
     func updateCategories()
     {
-        // Add categories to category popup button
         categoryPopUpButton.removeAllItems()
-        categoryPopUpButton.addItems(withTitles: categoryData.categoryStrings)
         
-        // Add the custom categories too
-        categoryPopUpButton.addItems(withTitles: categoryData.customCategoryStrings)
+        if let cd = categoryData
+        {
+            // Add categories to category popup button
+            categoryPopUpButton.addItems(withTitles: cd.categoryStrings)
+        
+            // Add the custom categories too
+            categoryPopUpButton.addItems(withTitles: cd.customCategoryStrings)
+        }
     }
 }
