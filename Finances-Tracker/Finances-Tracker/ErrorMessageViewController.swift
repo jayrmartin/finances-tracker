@@ -47,4 +47,10 @@ class ErrorMessageViewController: NSViewController
         errorMessageTextField.stringValue = errorMessageString
     }
     
+    override func viewDidAppear()
+    {
+        // No resizing
+        _ = self.view.window?.styleMask.remove(NSWindowStyleMask.resizable)
+    }
+    
 }

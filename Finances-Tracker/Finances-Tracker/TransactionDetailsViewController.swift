@@ -123,6 +123,9 @@ class TransactionDetailsViewController: NSViewController
     override func viewDidAppear()
     {
         super.viewDidAppear()
+        
+        // No resizing
+        _ = self.view.window?.styleMask.remove(NSWindowStyleMask.resizable)
     }
     
     override func viewWillAppear()

@@ -55,4 +55,10 @@ class OwnerDetailsViewController: NSViewController
         
         self.title = "New Owner"
     }
+    
+    override func viewDidAppear()
+    {
+        // No resizing
+        _ = self.view.window?.styleMask.remove(NSWindowStyleMask.resizable)
+    }
 }
