@@ -37,6 +37,8 @@ class ViewController: NSViewController
     @IBOutlet weak var transactionsTableView: NSTableView!
     @IBOutlet weak var ownersTableView: NSTableView!
     
+    @IBOutlet weak var ownerLabel: NSTextField!
+    
     // List of existing transactions
     fileprivate var transactions: [NSManagedObject] = []
     
@@ -45,6 +47,9 @@ class ViewController: NSViewController
     {
         didSet
         {
+            // Update the label
+            ownerLabel.stringValue = transactionsOwner
+            
             // Update state of some buttons
             addButton.isEnabled = (transactionsOwner != "")
         }
