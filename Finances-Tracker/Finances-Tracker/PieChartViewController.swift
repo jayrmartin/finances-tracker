@@ -19,9 +19,6 @@ class PieChartViewController: NSViewController
     override func viewDidLoad()
     {
         super.viewDidLoad()
-        
-        // Set minimum size
-        //self.preferredMinimumSize = self.view.frame.size / 2
     }
     
     override func viewWillAppear()

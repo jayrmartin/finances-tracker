@@ -19,6 +19,7 @@
 		208EF9551E351624008FB4E4 /* TransactionDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 208EF9541E351624008FB4E4 /* TransactionDetailsViewController.swift */; };
 		208EF9571E3527D7008FB4E4 /* TransactionData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 208EF9561E3527D7008FB4E4 /* TransactionData.swift */; };
 		20CF43461E45069C009A7554 /* OwnerDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20CF43451E45069C009A7554 /* OwnerDetailsViewController.swift */; };
+		20F377F71E563873004576CA /* FilterData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20F377F61E563873004576CA /* FilterData.swift */; };
 		20F4FF791E4CE7120026EB63 /* PieChartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20F4FF781E4CE7120026EB63 /* PieChartViewController.swift */; };
 		20F4FF7B1E4CF9160026EB63 /* PieChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20F4FF7A1E4CF9160026EB63 /* PieChartView.swift */; };
 /* End PBXBuildFile section */
@@ -38,6 +39,7 @@
 		208EF9541E351624008FB4E4 /* TransactionDetailsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransactionDetailsViewController.swift; sourceTree = "<group>"; };
 		208EF9561E3527D7008FB4E4 /* TransactionData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransactionData.swift; sourceTree = "<group>"; };
 		20CF43451E45069C009A7554 /* OwnerDetailsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OwnerDetailsViewController.swift; sourceTree = "<group>"; };
+		20F377F61E563873004576CA /* FilterData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FilterData.swift; sourceTree = "<group>"; };
 		20F4FF781E4CE7120026EB63 /* PieChartViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PieChartViewController.swift; sourceTree = "<group>"; };
 		20F4FF7A1E4CF9160026EB63 /* PieChartView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PieChartView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -74,6 +76,7 @@
 			children = (
 				207657E01E33F8CC008B6187 /* AppDelegate.swift */,
 				207657E21E33F8CC008B6187 /* ViewController.swift */,
+				20F377F61E563873004576CA /* FilterData.swift */,
 				207657E71E33F8CC008B6187 /* Assets.xcassets */,
 				207657E91E33F8CC008B6187 /* Main.storyboard */,
 				202BD7541E4A56FA00A822FC /* CustomCategoryViewController.swift */,
@@ -172,6 +175,7 @@
 				203C28FE1E4E1D9400C63D98 /* TransactionsChartData.swift in Sources */,
 				20F4FF791E4CE7120026EB63 /* PieChartViewController.swift in Sources */,
 				207657E61E33F8CC008B6187 /* Finances_Tracker.xcdatamodeld in Sources */,
+				20F377F71E563873004576CA /* FilterData.swift in Sources */,
 				207657E31E33F8CC008B6187 /* ViewController.swift in Sources */,
 				207657E11E33F8CC008B6187 /* AppDelegate.swift in Sources */,
 			);

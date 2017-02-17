@@ -33,11 +33,27 @@ class ViewController: NSViewController
     @IBOutlet weak var editButton: NSButton!
     @IBOutlet weak var deleteButton: NSButton!
     @IBOutlet weak var analyzeButton: NSButton!
+    @IBOutlet weak var showAllButton: NSButton!
     
     @IBOutlet weak var transactionsTableView: NSTableView!
     @IBOutlet weak var ownersTableView: NSTableView!
     
     @IBOutlet weak var ownerLabel: NSTextField!
+    
+    // References to UI objects in "filters" view
+    @IBOutlet weak var dateFilterOptionsPopUpButton: NSPopUpButton!
+    @IBOutlet weak var startDatePicker: NSDatePicker!
+    @IBOutlet weak var endDatePicker: NSDatePicker!
+    @IBOutlet weak var dateSeparatorLabel: NSTextField!
+    @IBOutlet weak var categoryFilterOptionsPopUpButton: NSPopUpButton!
+    @IBOutlet weak var categoryFilterTextField: NSTextField!
+    @IBOutlet weak var amountFilterOptionsPopUpButton: NSPopUpButton!
+    @IBOutlet weak var amountFilterTextField: NSTextField!
+    @IBOutlet weak var amountFilterOtherTextField: NSTextField!
+    @IBOutlet weak var amountSeparatorLabel: NSTextField!
+    @IBOutlet weak var vendorFilterOptionsPopUpButton: NSPopUpButton!
+    @IBOutlet weak var vendorFilterTextField: NSTextField!
+    @IBOutlet weak var filterButton: NSButton!
     
     // List of existing transactions
     fileprivate var transactions: [NSManagedObject] = []
@@ -92,6 +108,16 @@ class ViewController: NSViewController
     
     // Object for managing categories
     var categoryData: CategoryData = CategoryData()
+    
+    // Whether a filter has been applied to the transactions
+    var filterApplied: Bool = false
+    {
+        didSet
+        {
+            // Enable/disable the show all transactions button depending on if filter is applied
+            showAllButton.isEnabled = filterApplied
+        }
+    }
     
     @IBAction func handleNewButtonPress(_ sender: Any)
     {
@@ -157,6 +183,138 @@ class ViewController: NSViewController
         self.presentViewControllerAsModalWindow(chartsGraphViewController)
     }
     
+    @IBAction func handleFilterButtonPress(_ sender: Any)
+    {
+        // Grab date filter info
+        let dateFilterOptionString = dateFilterOptionsPopUpButton.titleOfSelectedItem ?? FilterData.FilterDateOptions.none.rawValue
+        let startDate: Date = startDatePicker.dateValue
+        let endDate: Date = endDatePicker.dateValue
+        
+        // Sanity check dates
+        if dateFilterOptionString == FilterData.FilterDateOptions.between.rawValue &&
+            startDate.compare(endDate) == ComparisonResult.orderedDescending
+        {
+            // TODO: Show error
+            print("Start date is after end date")
+            return
+        }
+        
+        // Grab category filter info
+        let categoryFilterOptionString = categoryFilterOptionsPopUpButton.titleOfSelectedItem ?? FilterData.FilterStringOptions.none.rawValue
+        let categoryText: String = categoryFilterTextField.stringValue
+        
+        // Sanity check category info
+        if categoryFilterOptionString != FilterData.FilterStringOptions.none.rawValue &&
+            categoryText.isEmpty
+        {
+            // TODO: Show error
+            print("Category field must contain text")
+            return
+        }
+        
+        // Grab amount filter info
+        let amountFilterOptionString = amountFilterOptionsPopUpButton.titleOfSelectedItem ?? FilterData.FilterNumberOptions.none.rawValue
+        let amount: Double = amountFilterTextField.doubleValue
+        let amount2: Double = amountFilterOtherTextField.doubleValue
+        
+        // Sanity check amount info
+        if amountFilterOptionString == FilterData.FilterNumberOptions.between.rawValue &&
+            (amountFilterTextField.stringValue.isEmpty || amountFilterOtherTextField.stringValue.isEmpty)
+        {
+            // TODO: Show error
+            print("Amount fields must contain a value")
+            return
+        }
+        
+        if amountFilterOptionString == FilterData.FilterNumberOptions.between.rawValue &&
+            amount > amount2
+        {
+            // TODO: Show error
+            print("First amount is greater than second amount")
+            return
+        }
+        
+        if amountFilterOptionString != FilterData.FilterNumberOptions.none.rawValue &&
+            amountFilterTextField.stringValue.isEmpty
+        {
+            // TODO: Show error
+            print("Amount field must contain value")
+            return
+        }
+        
+        // Grab vendor filter info
+        let vendorFilterOptionString = vendorFilterOptionsPopUpButton.titleOfSelectedItem ?? FilterData.FilterStringOptions.none.rawValue
+        let vendorText: String = vendorFilterTextField.stringValue
+        
+        // Sanity check category info
+        if vendorFilterOptionString != FilterData.FilterStringOptions.none.rawValue &&
+            vendorText.isEmpty
+        {
+            // TODO: Show error
+            print("Vendor field must contain text")
+            return
+        }
+        
+        // Create filter data object that will be used for filtering transactions
+        let filterData: FilterData = FilterData(dateFilterOption: dateFilterOptionString, startDate: startDate, endDate: endDate, categoryFilterOption: categoryFilterOptionString, categoryText: categoryText, amountFilterOption: amountFilterOptionString, amount: amount, amountOther: amount2, vendorFilterOption: vendorFilterOptionString, vendorText: vendorText)
+        
+        if let fetchPredicate = filterData.createPredicateForTransactionsFromFilterOptions(transactionOwner: transactionsOwner)
+        {
+            // Load transactions with given predicate
+            loadTransactions(withPredicate: fetchPredicate, updateView: true)
+            filterApplied = true
+        }
+        else
+        {
+            // TODO: Show error
+            print("Error creating predicate for filtering transactions")
+            return
+        }
+    }
+    
+    @IBAction func handleDateFilterOptionPopUpChoice(_ sender: Any)
+    {
+        guard let btn = sender as? NSPopUpButton else
+        {
+            return
+        }
+        
+        guard let dateFilterOptionString = btn.titleOfSelectedItem else
+        {
+            return
+        }
+        
+        // Hide or show the other date picker
+        let isChoiceBetween: Bool = (dateFilterOptionString == FilterData.FilterDateOptions.between.rawValue)
+        endDatePicker.isHidden = !isChoiceBetween
+        dateSeparatorLabel.isHidden = !isChoiceBetween
+    }
+    
+    @IBAction func handleAmountFilterOptionPopUpChoice(_ sender: Any)
+    {
+        guard let btn = sender as? NSPopUpButton else
+        {
+            return
+        }
+        
+        guard let amountFilterOptionString = btn.titleOfSelectedItem else
+        {
+            return
+        }
+        
+        // Hide or show the other amount
+        let isChoiceBetween: Bool = (amountFilterOptionString == FilterData.FilterNumberOptions.between.rawValue)
+        amountFilterOtherTextField.isHidden = !isChoiceBetween
+        amountSeparatorLabel.isHidden = !isChoiceBetween
+    }
+    
+    @IBAction func handleShowAllButtonPress(_ sender: Any)
+    {
+        // Load all transactions
+        loadTransactions(updateView: true)
+        filterApplied = false
+    }
+    
     override func viewDidLoad()
     {
         super.viewDidLoad()
@@ -199,6 +357,9 @@ class ViewController: NSViewController
         {
             loadTransactions(updateView: true)
         }
+        
+        setupFiltersSectionDefaultValues()
+        filterApplied = false
     }
 
     override var representedObject: Any?
@@ -373,6 +534,14 @@ class ViewController: NSViewController
     
     func loadTransactions(updateView: Bool)
     {
+        // Create predicate to load transactions of owner
+        let predicate: NSPredicate = NSPredicate(format: "%K == %@", TransactionData.TransactionAttributes.owner.rawValue, transactionsOwner)
+        
+        loadTransactions(withPredicate: predicate, updateView: updateView)
+    }
+    
+    func loadTransactions(withPredicate predicate: NSPredicate?, updateView: Bool)
+    {
         // Sanity check the managed context
         guard let managedContext = cdManagedContext else
         {
@@ -382,8 +551,11 @@ class ViewController: NSViewController
         // Create a fetch request for the transactions
         let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: "Transaction")
         
-        // Add predicate to load transactions of owner
-        fetchRequest.predicate = NSPredicate(format: "%K == %@", TransactionData.TransactionAttributes.owner.rawValue, transactionsOwner)
+        // Add predicate if not nil
+        if let predicateToAdd = predicate
+        {
+            fetchRequest.predicate = predicateToAdd
+        }
         
         // Pass the fetch request to the managed object context to do the work
         do
@@ -586,6 +758,40 @@ class ViewController: NSViewController
         ownersTableView.reloadData()
         
         return AddOwnerResult.Success
+    }
+    
+    // Helper function to set up filters section to default values
+    fileprivate func setupFiltersSectionDefaultValues()
+    {
+        // Date
+        dateFilterOptionsPopUpButton.removeAllItems()
+        dateFilterOptionsPopUpButton.addItems(withTitles: FilterData.filterDateOptions)
+        dateFilterOptionsPopUpButton.selectItem(withTitle: FilterData.FilterDateOptions.none.rawValue)
+        startDatePicker.dateValue = Date()
+        endDatePicker.dateValue = Date()
+        endDatePicker.isHidden = true
+        dateSeparatorLabel.isHidden = true
+        
+        // Category
+        categoryFilterOptionsPopUpButton.removeAllItems()
+        categoryFilterOptionsPopUpButton.addItems(withTitles: FilterData.filterStringOptions)
+        categoryFilterOptionsPopUpButton.selectItem(withTitle: FilterData.FilterStringOptions.none.rawValue)
+        categoryFilterTextField.stringValue = ""
+        
+        // Amount
+        amountFilterOptionsPopUpButton.removeAllItems()
+        amountFilterOptionsPopUpButton.addItems(withTitles: FilterData.filterNumberOptions)
+        amountFilterOptionsPopUpButton.selectItem(withTitle: FilterData.FilterNumberOptions.none.rawValue)
+        amountFilterTextField.stringValue = ""
+        amountFilterOtherTextField.stringValue = ""
+        amountFilterOtherTextField.isHidden = true
+        amountSeparatorLabel.isHidden = true
+        
+        // Vendor
+        vendorFilterOptionsPopUpButton.removeAllItems()
+        vendorFilterOptionsPopUpButton.addItems(withTitles: FilterData.filterStringOptions)
+        vendorFilterOptionsPopUpButton.selectItem(withTitle: FilterData.FilterStringOptions.none.rawValue)
+        vendorFilterTextField.stringValue = ""
     }
 }
 

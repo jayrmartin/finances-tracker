@@ -92,6 +92,8 @@ class PieChartView: NSView
         {
             // Get current colour and increment for next loop
             let fillColor: NSColor = PieChartView.PieChartColors[colorIdx]
+            
+            // TODO: Fix this so colour doesn't loop around
             colorIdx = (colorIdx + 1) % PieChartView.PieChartColors.count
             
             //Swift.print("drawing category: \(categoryData.key) with amount: \(categoryData.value)")
