@@ -15,7 +15,7 @@ import Foundation
 class CategoryData
 {
     // Array of base options in the category popup button
-    var categoryStrings: [String] = [
+    let categoryStrings: [String] = [
         "Mortgage",
         "Rent",
         "Property Tax",

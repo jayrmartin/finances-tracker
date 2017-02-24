@@ -8,6 +8,38 @@
 
 import Cocoa
 
+// Practice generic function
+func swapTwoValues<T>(_ val1: inout T, _ val2: inout T)
+{
+    let temp: T = val1
+    val1 = val2
+    val2 = temp
+}
+
+// A generic function that wraps a given method in a closure while capturing the reference to the given object as unowned.
+// This should be used when assigning functions to variables to avoid strong retain cycles.
+// We are looking to return method in generic format: Class.method(object_instance)(parameters)
+// This works because the above format is equivalent to more standard method call format: object_instance.method(parameters)
+// Returns a method with parameters U and a return value of V.
+// Generic params:
+//      T - The object instance that will become unowned to break retain cycle
+//      U - The parameters of the given method.
+//      V - The return value of the given method.
+func unownedMethodPointer<T: AnyObject, U, V>(_ objInstance: T, _ method: @escaping (T) -> (U) -> V) -> ((U) -> V)
+{
+    return { [unowned objInstance] (params: U) -> V in
+        return method(objInstance)(params)
+    }
+}
+
+// This is the same as above except it will the reference to given object as weak.
+func weakMethodPointer<T: AnyObject, U, V>(_ objInstance: T, _ method: @escaping (T) -> (U) -> V) -> ((U) -> V)
+{
+    return { [weak objInstance] (params: U) -> V in
+        return method(objInstance!)(params)
+    }
+}
+
 class ViewController: NSViewController
 {
     // Save/load keys for UserDefaults
@@ -18,12 +50,11 @@ class ViewController: NSViewController
         static let CustomCategories = "customCategories"
     }
     
-    // Add owner success or error values
-    enum AddOwnerResult
+    // Add owner error values
+    enum AddOwnerError: Error
     {
-        static let Success = 0
-        static let GeneralError = -1
-        static let NameAlreadyExistsError = -2
+        case GeneralError
+        case NameAlreadyExistsError
     }
     
     // References to specific UI objects
@@ -138,7 +169,7 @@ class ViewController: NSViewController
         transactionDetailsViewController.categoryData = categoryData
         
         // Set callback function for adding transactions
-        transactionDetailsViewController.addTransactionCallbackFunction = addNewTransaction
+        transactionDetailsViewController.addTransactionCallbackFunction = unownedMethodPointer(self, ViewController.addNewTransaction)
         
         // Show the transaction details view controller
         self.presentViewControllerAsModalWindow(transactionDetailsViewController)
@@ -172,7 +203,7 @@ class ViewController: NSViewController
         }
         
         errorMessageViewController.errorMessageString = messageStr
-        errorMessageViewController.okCallbackFunction = deleteTransactions
+        errorMessageViewController.okCallbackFunction = unownedMethodPointer(self, ViewController.deleteTransactions)
         
         self.presentViewControllerAsSheet(errorMessageViewController)
     }
@@ -422,7 +453,7 @@ class ViewController: NSViewController
         transactionDetailsViewController.editingExistingTransaction = true
         
         // Set callback function to edit a specific transaction
-        transactionDetailsViewController.editTransactionCallbackFunction = editTransaction
+        transactionDetailsViewController.editTransactionCallbackFunction = unownedMethodPointer(self, ViewController.editTransaction)
         
         transactionDetailsViewController.categoryData = categoryData
         
@@ -735,19 +766,19 @@ class ViewController: NSViewController
         }
     }
     
-    // Return value of 0 means successful add.
-    // Return value < 0 means some sort of error.
-    func addOwner(name: String) -> Int
+    // Attempt to add an owner to the list.
+    // Throws a "AddOwnerError" if the owner name couldn't be added.
+    func addOwner(name: String) throws
     {
-        if name == ""
+        guard !name.isEmpty else
         {
-            return AddOwnerResult.GeneralError
+            throw AddOwnerError.GeneralError
         }
         
         // Check if owner name already exists
-        if ownersStrings.contains(name)
+        guard !ownersStrings.contains(name) else
         {
-            return AddOwnerResult.NameAlreadyExistsError
+            throw AddOwnerError.NameAlreadyExistsError
         }
         
         // Add to the list and save
@@ -756,8 +787,6 @@ class ViewController: NSViewController
         
         // Update the table
         ownersTableView.reloadData()
-        
-        return AddOwnerResult.Success
     }
     
     // Helper function to set up filters section to default values

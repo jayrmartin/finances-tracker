@@ -15,7 +15,7 @@ class OwnerDetailsViewController: NSViewController
     @IBOutlet weak var cancelButton: NSButton!
     
     // Callback function for adding a owner
-    var addOwnerCallbackFunction: ((String) -> Int)?
+    var addOwnerCallbackFunction: ((String) throws -> Void)?
     
     @IBAction func handleOkButtonPress(_ sender: Any)
     {
@@ -33,19 +33,29 @@ class OwnerDetailsViewController: NSViewController
         }
         
         // Callback to add it to the list of existing owners
-        let addResult: Int = addCallbackFunction(newOwnerText)
-        if addResult != 0
+        do
         {
-            // TODO: Show error
-            print("Error adding new owner: \(addResult)")
-        }
-        else
-        {
-            // Successful add!
+            try addCallbackFunction(newOwnerText)
             
+            // Successful add!
             // Close this view
             addOwnerCallbackFunction = nil
             self.dismissViewController(self)
+        }
+        catch ViewController.AddOwnerError.GeneralError
+        {
+            // TODO: Show error
+            print("Error adding new owner: General Error")
+        }
+        catch ViewController.AddOwnerError.NameAlreadyExistsError
+        {
+            // TODO: Show error
+            print("Error adding new owner: Name already exists")
+        }
+        catch
+        {
+            // Catch all other errors
+            print("Error adding new owner: Unhandled error")
         }
     }
     
